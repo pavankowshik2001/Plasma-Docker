@@ -6,7 +6,7 @@ import requests
 app = Flask(__name__)
 
 def check(email):
-    url = "https://hh01wwg9p0.execute-api.us-east-2.amazonaws.com/plasma/getdata?email="+email
+    url = "https://dov42l0d5k.execute-api.ap-south-1.amazonaws.com/plasma/getdata?email="+email
     status = requests.request("GET",url)
     print(status.json())
     return status.json()
@@ -23,7 +23,7 @@ def register():
     params = "name="+x[0]+"&email="+x[1]+"&phone="+x[2]+"&city="+x[3]+"&infect="+x[4]+"&blood="+x[5]+"&password="+x[6]
     
     if('errorType' in check(x[1])):
-        url = "https://hh01wwg9p0.execute-api.us-east-2.amazonaws.com/plasma/registration?"+params
+        url = "https://dov42l0d5k.execute-api.ap-south-1.amazonaws.com/plasma/registration?"+params
         response = requests.get(url)
         return render_template('register.html', pred="Registration Successful, please login using your details")
     else:
@@ -51,7 +51,7 @@ def loginpage():
         
 @app.route('/stats')
 def stats():
-    url = "https://hh01wwg9p0.execute-api.us-east-2.amazonaws.com/plasma/getbloodgroupsdata"
+    url = "https://dov42l0d5k.execute-api.ap-south-1.amazonaws.com/plasma/getbloodgroupdata"
     response = requests.get(url)
     r = response.json()
     print(r)
@@ -65,25 +65,17 @@ def requester():
 @app.route('/requested',methods=['POST'])
 def requested():
     bloodgrp = request.form['bloodgrp']
-    address = request.form['address']
-    print(address)
-    url = "https://hh01wwg9p0.execute-api.us-east-2.amazonaws.com/plasma/requestonbloodgroup?blood="+bloodgrp
+    #print(bloodgrp)
+    url = "https://dov42l0d5k.execute-api.ap-south-1.amazonaws.com/plasma/requestonbloodgroup?blood="+bloodgrp
     status = requests.request("GET",url)
     a=status.json()
-    print(a)
-    phone=[]
-    msg = "Need Plasma of your blood group for: "+address
+    emailids=[]
     for i in a:
-        url="https://www.fast2sms.com/dev/bulk?authorization=xCXuwWTzyjOD2ARd1EngbH3a7tKIq5PklJ8YSf0Lh4FQZecs9iNI1dSvuqprxFwCKYJXA5amQkBE36Rl&sender_id=FSTSMS&message="+msg+"&language=english&route=p&numbers="+str(i['phone'])
-        result=requests.request("GET",url)
-        print(result)
-        phone.append(i['phone'])
-
-    print(phone)
-    
+        emailids.append(i['email'])
+    print(emailids)
     return render_template('request.html', pred="Your request is sent to the concerned people.")
     
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=8080)
+    app.run(debug=True)
 
